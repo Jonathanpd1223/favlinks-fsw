@@ -1,29 +1,30 @@
-import Table from './Table'
-import Form from './Form'
-import React, { useState } from 'react';
+import Table from './Table';
+import Form from './Form';
+import React, { useState, useCallback } from 'react';
 
-
-function LinkContainer(){
-
+function LinkContainer() {
   const [favLinks, setFavLinks] = useState([]);
 
-    const removeLink = (index) => {
-      const updatedLinks = favLinks.filter((link, i) => i !== index);
-      setFavLinks(updatedLinks);
-      }
-    const handleSubmit = (favLink) => {
-      setFavLinks([...favLinks, favLink]);
-    }
+  // useCallback ensures these functions are not recreated on every render.
+  const removeLink = useCallback((index) => {
+    setFavLinks((currentLinks) => currentLinks.filter((_, i) => i !== index));
+  }, []);
 
-    return(
-        <div>
-            <h1>My Favorite Links</h1>
-            <p>Add a new link with a name and URL to the table! </p>
-            <Table linkData={favLinks} removeLink ={removeLink} />
-            <h1>Add New</h1>
-            <Form handleSubmit={handleSubmit} />
-        </div>
-    )
+  const handleSubmit = useCallback((favLink) => {
+    setFavLinks((currentLinks) => [...currentLinks, favLink]);
+  }, []);
 
+  return (
+    <div>
+      <h1>My Favorite Links</h1>
+      <p>Add a new link with a name and URL to the table!</p>
+      {/* Table displays the list of favorite links */}
+      <Table linkData={favLinks} removeLink={removeLink} />
+      <h1>Add New</h1>
+      {/* Form adds a new favorite link */}
+      <Form handleSubmit={handleSubmit} />
+    </div>
+  );
 }
-export default LinkContainer
+
+export default LinkContainer;
