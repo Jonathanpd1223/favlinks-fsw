@@ -1,48 +1,57 @@
-import React from "react"
+import React from "react";
+import PropTypes from "prop-types";
 
-
-function TableHeader(){
-    /* responsible for rendering the head of our table with the appropriate columns */
-    return(
-        <thead>
-        <tr>
-          <th>Name</th>
-          <th>URL</th>
-          <th>Remove</th>
-        </tr>
-      </thead>
-    )
+function TableHeader() {
+  return (
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>URL</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+  );
 }
 
-const TableBody = (props) => {
-    // boilerplate table body functional component
-    // we use Array.map to create table rows from LinkData passed via props
-    console.log(props.linkData)
-    const rows = props.linkData.map((row, index) => {
-      return (
-        <tr key={index}>
-          <td>{row.linkName}</td>
-          <td>
-            <a href={row.linkURL}>{row.linkURL}</a>
-          </td>
-          <td>
-            <button onClick={() => props.removeLink(index)}>Delete</button>
-          </td>
-        </tr>
-      )
+const TableBody = ({ linkData, onRemoveLink }) => {
+  const rows = linkData.map((row, index) => (
+    <tr key={row.id || index}>
+      <td>{row.linkName}</td>
+      <td>
+        <a href={row.linkURL} target="_blank" rel="noopener noreferrer">{row.linkURL}</a>
+      </td>
+      <td>
+        <button onClick={() => onRemoveLink(index)}>Delete</button>
+      </td>
+    </tr>
+  ));
+
+  return <tbody>{rows}</tbody>;
+};
+
+TableBody.propTypes = {
+  linkData: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      linkName: PropTypes.string.isRequired,
+      linkURL: PropTypes.string.isRequired
     })
-  
-    return <tbody>{rows}</tbody>
-  }
+  ),
+  onRemoveLink: PropTypes.func.isRequired
+};
 
-
-function Table(props){
-    return(
+function Table({ linkData, removeLink }) {
+  return (
     <table>
       <TableHeader />
-      <TableBody linkData={props.linkData} removeLink={props.handleRemove} />
+      <TableBody linkData={linkData} onRemoveLink={removeLink} />
     </table>
-    )
+  );
 }
 
-export default Table
+Table.propTypes = {
+  linkData: PropTypes.array.isRequired,
+  handleRemove: PropTypes.func.isRequired
+};
+
+export default Table;
